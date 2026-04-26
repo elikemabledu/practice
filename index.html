@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Australia Immigration Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3248;
+      --text: #e8eaf0;
+      --text-muted: #7b82a0;
+      --eli: #4f8ef7;
+      --isabel: #3ecf8e;
+      --both: #8b5cf6;
+      --done-bg: #1a2a1e;
+      --done-text: #5a7a62;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 24px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      max-width: 860px;
+      margin: 0 auto 20px;
+    }
+
+    .header-top h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header-top h1 span {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+    }
+
+    .stat {
+      text-align: right;
+    }
+
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 2px;
+    }
+
+    .progress-wrap {
+      max-width: 860px;
+      margin: 0 auto 16px;
+    }
+
+    .progress-bar-bg {
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--eli), var(--both));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-pct {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* ── Filters ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      max-width: 860px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 5px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover { border-color: #555; color: var(--text); }
+
+    .filter-btn.active[data-filter="all"] { background: var(--surface2); border-color: #555; color: var(--text); }
+    .filter-btn.active[data-filter="eli"] { background: rgba(79,142,247,.15); border-color: var(--eli); color: var(--eli); }
+    .filter-btn.active[data-filter="isabel"] { background: rgba(62,207,142,.15); border-color: var(--isabel); color: var(--isabel); }
+    .filter-btn.active[data-filter="both"] { background: rgba(139,92,246,.15); border-color: var(--both); color: var(--both); }
+
+    /* ── Main ── */
+    main {
+      max-width: 860px;
+      margin: 32px auto 0;
+      padding: 0 16px;
+    }
+
+    /* ── Phase ── */
+    .phase {
+      margin-bottom: 32px;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .phase-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .phase-progress {
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .phase-progress-fill {
+      height: 100%;
+      background: var(--eli);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    /* ── Task ── */
+    .task {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+
+    .task:hover { background: var(--surface2); }
+
+    .task.done {
+      background: var(--done-bg);
+    }
+
+    .task.done .task-text {
+      color: var(--done-text);
+      text-decoration: line-through;
+      text-decoration-color: #3a5a42;
+    }
+
+    .task.hidden { display: none; }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 2px solid var(--border);
+      background: transparent;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .task.done .checkbox {
+      background: #2a5c34;
+      border-color: #2a5c34;
+    }
+
+    .checkbox svg { display: none; }
+    .task.done .checkbox svg { display: block; }
+
+    .task-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-text {
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-left: 8px;
+      vertical-align: middle;
+      flex-shrink: 0;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    .badge-eli { background: rgba(79,142,247,.18); color: var(--eli); }
+    .badge-isabel { background: rgba(62,207,142,.18); color: var(--isabel); }
+    .badge-both { background: rgba(139,92,246,.18); color: var(--both); }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ── Reset ── */
+    .reset-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .reset-btn:hover { border-color: #e55; color: #e55; }
+
+    @media (max-width: 600px) {
+      .stats { gap: 16px; }
+      .stat-num { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <h1>Australia Immigration <span>/ 190 Skilled Nominated</span></h1>
+      <div class="legend" style="margin-top:8px;">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--eli)"></div> Eli (primary — Interior Designer 232511)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--isabel)"></div> Isabel (ICT Support Engineer 263212)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--both)"></div> Both</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Done</div></div>
+      <div class="stat"><div class="stat-num" id="stat-remaining">38</div><div class="stat-label">Remaining</div></div>
+      <div class="stat"><div class="stat-num" id="stat-pct">0%</div><div class="stat-label">Complete</div></div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="global-bar" style="width:0%"></div></div>
+    <div class="progress-pct" id="progress-label">0 of 38 tasks complete</div>
+  </div>
+  <div class="filters" style="justify-content:space-between; align-items:center;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="eli">Eli</button>
+      <button class="filter-btn" data-filter="isabel">Isabel</button>
+      <button class="filter-btn" data-filter="both">Both</button>
+    </div>
+    <button class="reset-btn" id="reset-btn">Reset all</button>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<script>
+const PHASES = [
+  {
+    id: 1,
+    title: "Phase 1 — Skills Assessments",
+    tasks: [
+      { id: "p1t1", text: "Gather VETASSESS documents: qualification certificates, transcripts, CV, reference letters, invoices, contracts, portfolio", who: "eli" },
+      { id: "p1t2", text: "Prepare statutory declaration for interior design experience (OÜ projects 2021–2025)", who: "eli" },
+      { id: "p1t3", text: "Get statutory declaration notarised at Estonian notary", who: "eli" },
+      { id: "p1t4", text: "Lodge VETASSESS application under 232511 Interior Designer", who: "eli" },
+      { id: "p1t5", text: "Lodge ACS application under 263212 ICT Support Engineer", who: "isabel" },
+      { id: "p1t6", text: "Await VETASSESS outcome (typically 10–16 weeks)", who: "eli" },
+      { id: "p1t7", text: "Await ACS outcome (typically 4–8 weeks)", who: "isabel" },
+    ]
+  },
+  {
+    id: 2,
+    title: "Phase 2 — English Tests",
+    tasks: [
+      { id: "p2t1", text: "Eli: IELTS result confirmed — 8.0 overall (Superior, 20 points)", who: "eli" },
+      { id: "p2t2", text: "Isabel: Sit IELTS, target overall 8.0 for partner points contribution", who: "isabel" },
+      { id: "p2t3", text: "Isabel: Confirm IELTS result and check points calculation", who: "isabel" },
+    ]
+  },
+  {
+    id: 3,
+    title: "Phase 3 — Points Calculation & EOI",
+    tasks: [
+      { id: "p3t1", text: "Confirm final points tally once both skills assessments and IELTS are done (target: 85–90 for you as primary)", who: "eli" },
+      { id: "p3t2", text: "Create ImmiAccount for both you and Isabel", who: "both" },
+      { id: "p3t3", text: "Lodge EOI on SkillSelect under 232511 targeting Victoria 190 as primary preference", who: "eli" },
+      { id: "p3t4", text: "Lodge Isabel's EOI on SkillSelect under 263212 targeting Victoria 190 as parallel", who: "isabel" },
+      { id: "p3t5", text: "Add South Australia 190 as secondary preference in both EOIs", who: "both" },
+      { id: "p3t6", text: "Monitor SkillSelect for state nomination invitation rounds (check monthly)", who: "both" },
+    ]
+  },
+  {
+    id: 4,
+    title: "Phase 4 — State Nomination",
+    tasks: [
+      { id: "p4t1", text: "Receive state nomination invitation (Victoria or SA)", who: "both" },
+      { id: "p4t2", text: "Apply for state nomination within the invitation deadline (typically 14–21 days)", who: "both" },
+      { id: "p4t3", text: "Await state nomination outcome (4–12 weeks depending on state)", who: "both" },
+      { id: "p4t4", text: "Receive state nomination — triggers federal visa invitation", who: "both" },
+    ]
+  },
+  {
+    id: 5,
+    title: "Phase 5 — Visa Application",
+    tasks: [
+      { id: "p5t1", text: "Receive federal invitation to apply (ITA) from SkillSelect", who: "both" },
+      { id: "p5t2", text: "Prepare visa application documents: health checks, police clearances (Estonia + Ghana), identity docs", who: "both" },
+      { id: "p5t3", text: "Lodge 190 (or 491) visa application within 60 days of ITA", who: "both" },
+      { id: "p5t4", text: "Complete health examinations (HAP ID required, booked via BUPA or Medibank)", who: "both" },
+      { id: "p5t5", text: "Obtain police clearance from Estonia (Politsei- ja Piirivalveamet)", who: "both" },
+      { id: "p5t6", text: "Obtain police clearance from Ghana (Ghana Police Service)", who: "both" },
+      { id: "p5t7", text: "Await visa decision (typically 6–18 months for 190)", who: "both" },
+      { id: "p5t8", text: "Visa granted — activate within 12 months by travelling to Australia", who: "both" },
+    ]
+  },
+  {
+    id: 6,
+    title: "Phase 6 — Pre-Arrival & Settlement",
+    tasks: [
+      { id: "p6t1", text: "Begin job search for interior design roles in Melbourne (SEEK, LinkedIn, studio direct outreach)", who: "eli" },
+      { id: "p6t2", text: "Build/update portfolio framing experience as interior design + 3D viz", who: "eli" },
+      { id: "p6t3", text: "Isabel begins job search in IT support/ICT engineering — Melbourne focus", who: "isabel" },
+      { id: "p6t4", text: "Research Melbourne neighbourhoods and short-term rental options", who: "both" },
+      { id: "p6t5", text: "Enrol children in school if applicable, arrange health insurance (Medibank/Bupa)", who: "both" },
+      { id: "p6t6", text: "Arrive in Australia — activate visa", who: "both" },
+      { id: "p6t7", text: "Register with Medicare, open Australian bank account, get TFN", who: "both" },
+    ]
+  },
+  {
+    id: 7,
+    title: "Phase 7 — PR Pathway (if on 491)",
+    tasks: [
+      { id: "p7t1", text: "Live and work in designated regional area for 3 years on 491", who: "both" },
+      { id: "p7t2", text: "Meet income requirement (AUD 53,900/yr minimum)", who: "both" },
+      { id: "p7t3", text: "Apply for 191 Permanent Residence after 3-year regional requirement met", who: "both" },
+    ]
+  }
+];
+
+const STORAGE_KEY = "aus-tracker-v1";
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+let activeFilter = "all";
+
+function allTasks() {
+  return PHASES.flatMap(p => p.tasks);
+}
+
+function updateGlobalStats() {
+  const total = allTasks().length;
+  const done = allTasks().filter(t => state[t.id]).length;
+  const pct = Math.round((done / total) * 100);
+
+  document.getElementById("stat-done").textContent = done;
+  document.getElementById("stat-remaining").textContent = total - done;
+  document.getElementById("stat-pct").textContent = pct + "%";
+  document.getElementById("global-bar").style.width = pct + "%";
+  document.getElementById("progress-label").textContent = `${done} of ${total} tasks complete`;
+}
+
+function updatePhaseStats(phaseId, tasks) {
+  const done = tasks.filter(t => state[t.id]).length;
+  const total = tasks.length;
+  const pct = total ? (done / total) * 100 : 0;
+  const el = document.getElementById(`phase-count-${phaseId}`);
+  const bar = document.getElementById(`phase-bar-${phaseId}`);
+  if (el) el.textContent = `${done}/${total}`;
+  if (bar) bar.style.width = pct + "%";
+}
+
+function applyFilter() {
+  document.querySelectorAll(".task").forEach(el => {
+    const who = el.dataset.who;
+    const visible = activeFilter === "all" || who === activeFilter || (activeFilter !== "both" && who === "both");
+    el.classList.toggle("hidden", !visible);
+  });
+}
+
+function toggleTask(id) {
+  state[id] = !state[id];
+  saveState(state);
+
+  const el = document.getElementById(`task-${id}`);
+  el.classList.toggle("done", state[id]);
+
+  const phaseId = id.match(/^p(\d+)/)[1];
+  const phase = PHASES.find(p => p.id === parseInt(phaseId));
+  if (phase) updatePhaseStats(phaseId, phase.tasks);
+
+  updateGlobalStats();
+}
+
+function render() {
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+
+  PHASES.forEach(phase => {
+    const section = document.createElement("div");
+    section.className = "phase";
+
+    section.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-title">${phase.title}</span>
+        <span class="phase-count" id="phase-count-${phase.id}">0/${phase.tasks.length}</span>
+      </div>
+      <div class="phase-progress">
+        <div class="phase-progress-fill" id="phase-bar-${phase.id}" style="width:0%"></div>
+      </div>
+    `;
+
+    phase.tasks.forEach(task => {
+      const div = document.createElement("div");
+      div.className = "task" + (state[task.id] ? " done" : "");
+      div.id = `task-${task.id}`;
+      div.dataset.who = task.who;
+
+      div.innerHTML = `
+        <div class="checkbox">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="task-body">
+          <span class="task-text">${task.text}</span>
+        </div>
+        <span class="badge badge-${task.who}">${task.who === "eli" ? "Eli" : task.who === "isabel" ? "Isabel" : "Both"}</span>
+      `;
+
+      div.addEventListener("click", () => toggleTask(task.id));
+      section.appendChild(div);
+    });
+
+    main.appendChild(section);
+    updatePhaseStats(phase.id, phase.tasks);
+  });
+
+  updateGlobalStats();
+  applyFilter();
+}
+
+// Filter buttons
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    applyFilter();
+  });
+});
+
+// Reset
+document.getElementById("reset-btn").addEventListener("click", () => {
+  if (confirm("Reset all progress? This cannot be undone.")) {
+    state = {};
+    saveState(state);
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
