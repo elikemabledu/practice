@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Elikem Abledu — Archviz Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  }
+  html, body { margin: 0; padding: 0; background: #0a0908; height: 100%; }
+  body { font-family: var(--font-sans); }
+  ::selection { background: #B85C2C; color: #f3ede4; }
+
+  .dirA, .dirA * { cursor: none !important; }
+
+  .dirA, html, body { scrollbar-width: none; }
+  .dirA::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+
+  @keyframes av-rec {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+  @keyframes av-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  #root { width: 100vw; height: 100vh; overflow: hidden; }
+  .dirA { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" data-presets="react">
+// ─── Shared constants ────────────────────────────────────────────────────────
+const ACCENT = '#B85C2C';
+const ACCENT_DIM = '#8a4520';
+const INK = '#0a0908';
+const PAPER = '#f3ede4';
+const FOG = '#1a1816';
+
+// ─── Project data ────────────────────────────────────────────────────────────
+const PROJECTS = [
+  { id: 'p01', title: 'Mira House', client: 'Private commission', loc: 'Lisbon, PT', year: 2026, type: 'Residential interior',
+    img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p02', title: 'Halden Pavilion', client: 'Statsbygg', loc: 'Halden, NO', year: 2025, type: 'Cultural exterior',
+    img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p03', title: 'Saltern Quarter', client: 'Ørestad Property', loc: 'Copenhagen, DK', year: 2025, type: 'Masterplan',
+    img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p04', title: 'Atrium 11', client: 'Foster Practice', loc: 'London, UK', year: 2025, type: 'Office interior',
+    img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p05', title: 'Casa Bruma', client: 'Estudio MMX', loc: 'Valle de Bravo, MX', year: 2024, type: 'Residential exterior',
+    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p06', title: 'Northline Terminal', client: 'NS Rail', loc: 'Utrecht, NL', year: 2024, type: 'Transport infrastructure',
+    img: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p07', title: 'Ferro Loft', client: 'Private commission', loc: 'Milan, IT', year: 2024, type: 'Residential interior',
+    img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p08', title: 'Kestrel Tower', client: 'Lendlease', loc: 'Sydney, AU', year: 2024, type: 'Hi-rise exterior',
+    img: 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p09', title: 'Salk Annex', client: 'Salk Institute', loc: 'La Jolla, US', year: 2023, type: 'Institutional',
+    img: 'https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?w=2200&q=85&auto=format&fit=crop' },
+  { id: 'p10', title: 'Aviary Pavilion', client: 'V&A Dundee', loc: 'Dundee, UK', year: 2023, type: 'Cultural exterior',
+    img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=2200&q=85&auto=format&fit=crop' },
+];
+
+// ─── Custom cursor ────────────────────────────────────────────────────────────
+function CustomCursor({ scopeRef, label = 'View' }) {
+  const dotRef = React.useRef(null);
+  const ringRef = React.useRef(null);
+  const [hover, setHover] = React.useState(false);
+  const [active, setActive] = React.useState(false);
+
+  React.useEffect(() => {
+    const scope = scopeRef.current;
+    if (!scope) return;
+    let raf = 0;
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    const onMove = (e) => {
+      const rect = scope.getBoundingClientRect();
+      mx = e.clientX - rect.left;
+      my = e.clientY - rect.top;
+      setActive(true);
+      const onHover = e.target.closest && e.target.closest('[data-cursor-hover]');
+      setHover(!!onHover);
+    };
+    const onLeave = () => setActive(false);
+    const tick = () => {
+      rx += (mx - rx) * 0.22;
+      ry += (my - ry) * 0.22;
+      if (dotRef.current) dotRef.current.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+      if (ringRef.current) ringRef.current.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+      raf = requestAnimationFrame(tick);
+    };
+    scope.addEventListener('mousemove', onMove);
+    scope.addEventListener('mouseleave', onLeave);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      scope.removeEventListener('mousemove', onMove);
+      scope.removeEventListener('mouseleave', onLeave);
+      cancelAnimationFrame(raf);
+    };
+  }, [scopeRef]);
+
+  return (
+    <React.Fragment>
+      <div ref={ringRef} style={{
+        position: 'absolute', left: 0, top: 0, pointerEvents: 'none', zIndex: 9999,
+        width: hover ? 84 : 26, height: hover ? 84 : 26, borderRadius: '50%',
+        border: `1px solid ${hover ? ACCENT : 'rgba(255,255,255,0.5)'}`,
+        opacity: active ? 1 : 0,
+        transition: 'width .25s cubic-bezier(.2,.8,.2,1), height .25s cubic-bezier(.2,.8,.2,1), border-color .2s, opacity .2s',
+        mixBlendMode: 'difference',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em',
+        color: hover ? ACCENT : 'rgba(255,255,255,0.8)', textTransform: 'uppercase',
+      }}>{hover ? label : ''}</div>
+      <div ref={dotRef} style={{
+        position: 'absolute', left: 0, top: 0, pointerEvents: 'none', zIndex: 9999,
+        width: 4, height: 4, borderRadius: '50%', background: ACCENT,
+        opacity: active && !hover ? 1 : 0, transition: 'opacity .2s',
+      }} />
+    </React.Fragment>
+  );
+}
+
+// ─── Film grain overlay ───────────────────────────────────────────────────────
+function GrainOverlay({ intensity = 0.08, on = true }) {
+  if (!on) return null;
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 100,
+      opacity: intensity, mixBlendMode: 'overlay',
+      backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`,
+      backgroundSize: '220px 220px',
+    }} />
+  );
+}
+
+// ─── Fade-up on viewport entry ────────────────────────────────────────────────
+function FadeUp({ children, delay = 0, scopeRef, style: extraStyle }) {
+  const ref = React.useRef(null);
+  const [shown, setShown] = React.useState(false);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const root = scopeRef && scopeRef.current ? scopeRef.current : null;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          setTimeout(() => setShown(true), delay);
+          obs.unobserve(el);
+        }
+      });
+    }, { root, rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [delay, scopeRef]);
+  return (
+    <div ref={ref} style={{
+      opacity: shown ? 1 : 0,
+      transform: shown ? 'translateY(0)' : 'translateY(28px)',
+      transition: 'opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1)',
+      ...extraStyle,
+    }}>{children}</div>
+  );
+}
+
+// ─── Project stack item ───────────────────────────────────────────────────────
+function ProjectStack({ project, index, scopeRef, layout }) {
+  const ref = React.useRef(null);
+  const imgRef = React.useRef(null);
+  const [hovered, setHovered] = React.useState(false);
+
+  React.useEffect(() => {
+    const scope = scopeRef.current;
+    if (!scope || !ref.current || !imgRef.current) return;
+    const onScroll = () => {
+      const r = ref.current.getBoundingClientRect();
+      const sr = scope.getBoundingClientRect();
+      const center = (r.top - sr.top) + r.height / 2 - sr.height / 2;
+      const t = -center * 0.05;
+      if (imgRef.current) {
+        imgRef.current.style.transform = `scale(${hovered ? 1.04 : 1.01}) translateY(${t}px)`;
+      }
+    };
+    scope.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => scope.removeEventListener('scroll', onScroll);
+  }, [scopeRef, hovered]);
+
+  const isOdd = index % 2 === 1;
+
+  return (
+    <FadeUp scopeRef={scopeRef} delay={50}>
+      <article ref={ref} data-cursor-hover
+        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: layout === 'asym' ? (isOdd ? '1fr 2.4fr' : '2.4fr 1fr') : '1fr 2.4fr',
+          gap: 48, alignItems: 'flex-end',
+        }}
+      >
+        {/* Caption side */}
+        <div style={{ order: layout === 'asym' && isOdd ? 2 : 1, paddingBottom: 12 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em',
+            textTransform: 'uppercase', color: ACCENT, marginBottom: 16,
+          }}>No. {String(index + 1).padStart(3, '0')}</div>
+          <h3 style={{
+            fontFamily: 'var(--font-sans)', fontWeight: 300,
+            fontSize: 'clamp(28px, 3.2vw, 52px)', lineHeight: 1.05, letterSpacing: '-0.025em',
+            margin: 0, marginBottom: 18, color: PAPER,
+          }}>
+            {project.title.split(' ').map((w, i, arr) => i === arr.length - 1 ? (
+              <span key={i} style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{w}</span>
+            ) : <span key={i}>{w} </span>)}
+          </h3>
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: 6,
+            fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.06em',
+            color: 'rgba(243,237,228,0.6)', textTransform: 'uppercase',
+          }}>
+            {[['Client', project.client], ['Location', project.loc], ['Year', project.year], ['Type', project.type]].map(([label, val], idx, arr) => (
+              <div key={label} style={{
+                display: 'flex', justifyContent: 'space-between',
+                borderBottom: idx < arr.length - 1 ? '1px solid rgba(243,237,228,0.1)' : 'none',
+                paddingBottom: idx < arr.length - 1 ? 6 : 0,
+              }}>
+                <span style={{ opacity: 0.55 }}>{label}</span><span>{val}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Image side */}
+        <div style={{
+          order: layout === 'asym' && isOdd ? 1 : 2,
+          position: 'relative', overflow: 'hidden', aspectRatio: '16/10',
+          background: FOG,
+        }}>
+          <div ref={imgRef} style={{
+            position: 'absolute', inset: 0, backgroundImage: `url(${project.img})`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            transition: 'transform 1.4s cubic-bezier(.2,.7,.2,1), filter .8s',
+            filter: hovered ? 'brightness(1.08) saturate(1.05)' : 'brightness(0.92)',
+            willChange: 'transform',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: hovered
+              ? 'linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%)'
+              : 'linear-gradient(180deg, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.35) 100%)',
+            transition: 'background .6s',
+          }} />
+          {/* Hover caption fade-in */}
+          <div style={{
+            position: 'absolute', left: 24, right: 24, bottom: 24,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+            fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.16em',
+            textTransform: 'uppercase', color: PAPER,
+            opacity: hovered ? 1 : 0, transform: hovered ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'opacity .5s .05s, transform .5s .05s',
+          }}>
+            <span>{project.type} · {project.year}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              View case
+              <svg width="20" height="8" viewBox="0 0 20 8" fill="none">
+                <path d="M0 4 H18 M14 1 L18 4 L14 7" stroke={ACCENT} strokeWidth="1" />
+              </svg>
+            </span>
+          </div>
+          {/* Index number */}
+          <div style={{
+            position: 'absolute', top: 18, right: 22,
+            fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300,
+            fontSize: 18, color: 'rgba(243,237,228,0.85)', letterSpacing: '0.02em',
+          }}>{String(index + 1).padStart(2, '0')} / 10</div>
+        </div>
+      </article>
+    </FadeUp>
+  );
+}
+
+// ─── Direction A — Editorial Stack ────────────────────────────────────────────
+function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
+  const scopeRef = React.useRef(null);
+  const heroBgRef = React.useRef(null);
+  const [activeSection, setActive] = React.useState('index');
+  const [tc, setTc] = React.useState('01:24:36:12');
+
+  // Live timecode
+  React.useEffect(() => {
+    const t = setInterval(() => {
+      const d = new Date();
+      const f = Math.floor((d.getMilliseconds() / 1000) * 24);
+      setTc(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}:${String(f).padStart(2, '0')}`);
+    }, 80);
+    return () => clearInterval(t);
+  }, []);
+
+  // Hero parallax + section detection
+  React.useEffect(() => {
+    const scope = scopeRef.current;
+    if (!scope) return;
+    const onScroll = () => {
+      const y = scope.scrollTop;
+      if (heroBgRef.current) {
+        heroBgRef.current.style.transform = `translateY(${y * 0.35}px) scale(${1 + y * 0.0003})`;
+      }
+      const sections = scope.querySelectorAll('[data-section]');
+      const mid = scope.clientHeight / 2;
+      sections.forEach((s) => {
+        const r = s.getBoundingClientRect();
+        const sr = scope.getBoundingClientRect();
+        const top = r.top - sr.top;
+        const bot = top + r.height;
+        if (top <= mid && bot >= mid) setActive(s.dataset.section);
+      });
+    };
+    scope.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => scope.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollTo = (id) => {
+    const scope = scopeRef.current;
+    const target = scope?.querySelector(`[data-section="${id}"]`);
+    if (target) scope.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+  };
+
+  return (
+    <div ref={scopeRef} className="dirA" style={{
+      position: 'relative', width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden',
+      background: INK, color: PAPER, cursor: 'none',
+      fontFamily: 'var(--font-sans)',
+    }}>
+      <CustomCursor scopeRef={scopeRef} label="View" />
+      <GrainOverlay on={grain} intensity={grainIntensity} />
+
+      {/* Side rail nav */}
+      <div style={{ position: 'sticky', top: 0, left: 0, height: 0, zIndex: 50, width: 0 }}>
+        <nav style={{
+          position: 'absolute', top: 0, left: 0, height: '100vh', width: 88,
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          padding: '32px 0 32px 28px', pointerEvents: 'none', boxSizing: 'border-box',
+        }}>
+          <div style={{ pointerEvents: 'auto' }}>
+            <div data-cursor-hover onClick={() => scrollTo('index')} style={{
+              fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+              fontSize: 22, color: PAPER, lineHeight: 1, letterSpacing: '-0.01em',
+            }}>ea<span style={{ color: ACCENT }}>.</span></div>
+          </div>
+          <div style={{
+            pointerEvents: 'auto', display: 'flex', flexDirection: 'column', gap: 14,
+            fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase',
+          }}>
+            {[['index', 'Index'], ['work', 'Work'], ['about', 'About'], ['contact', 'Contact']].map(([id, label]) => (
+              <button data-cursor-hover key={id} onClick={() => scrollTo(id)} style={{
+                background: 'none', border: 0, padding: 0, cursor: 'none', textAlign: 'left',
+                color: activeSection === id ? PAPER : 'rgba(243,237,228,0.4)',
+                fontFamily: 'inherit', fontSize: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit',
+                display: 'flex', alignItems: 'center', gap: 10, transition: 'color .3s',
+              }}>
+                <span style={{
+                  width: activeSection === id ? 22 : 8, height: 1,
+                  background: activeSection === id ? ACCENT : 'rgba(243,237,228,0.4)',
+                  transition: 'all .3s',
+                }} />
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{
+            pointerEvents: 'auto', writingMode: 'vertical-rl', transform: 'rotate(180deg)',
+            fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'rgba(243,237,228,0.4)', alignSelf: 'flex-start',
+          }}>MMXXVI · Reel</div>
+        </nav>
+      </div>
+
+      {/* HERO — letterboxed cinematic frame */}
+      <section data-section="index" style={{
+        position: 'relative', height: '100vh', minHeight: 720, width: '100%',
+        overflow: 'hidden', display: 'flex', alignItems: 'flex-end',
+        background: '#000',
+      }}>
+        {/* Letterboxed inner frame */}
+        <div style={{ position: 'absolute', inset: '64px 0 64px 0', overflow: 'hidden' }}>
+          <div ref={heroBgRef} style={{
+            position: 'absolute', inset: '-10% 0',
+            backgroundImage: `url(${PROJECTS[0].img})`,
+            backgroundSize: 'cover', backgroundPosition: 'center', willChange: 'transform',
+            filter: 'contrast(1.08) saturate(0.92) brightness(0.92)',
+          }} />
+          {/* Tonal grade */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.05) 30%, rgba(10,9,8,0.25) 60%, rgba(10,9,8,0.95) 100%)',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: `radial-gradient(ellipse at 72% 28%, rgba(184,92,44,0.22), transparent 55%)`,
+            mixBlendMode: 'screen',
+          }} />
+          {/* Vignette */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%)',
+          }} />
+          {/* Crop marks */}
+          {[
+            { top: 14, left: 14, b: 'TL' },
+            { top: 14, right: 14, b: 'TR' },
+            { bottom: 14, left: 14, b: 'BL' },
+            { bottom: 14, right: 14, b: 'BR' },
+          ].map((c) => (
+            <svg key={c.b} width="14" height="14" viewBox="0 0 14 14" style={{
+              position: 'absolute', top: c.top, right: c.right, bottom: c.bottom, left: c.left,
+              opacity: 0.55,
+              transform: c.b === 'TR' ? 'scaleX(-1)' : c.b === 'BL' ? 'scaleY(-1)' : c.b === 'BR' ? 'scale(-1,-1)' : 'none',
+            }}>
+              <path d="M0 0 H8 M0 0 V8" stroke={ACCENT} strokeWidth="1" />
+            </svg>
+          ))}
+        </div>
+
+        {/* Top letterbox bar — slate chrome */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 64,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 32px 0 130px', zIndex: 5,
+          fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.22em',
+          textTransform: 'uppercase', color: 'rgba(243,237,228,0.55)',
+          borderBottom: '1px solid rgba(243,237,228,0.06)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{
+                width: 6, height: 6, borderRadius: '50%', background: ACCENT,
+                boxShadow: `0 0 10px ${ACCENT}`, animation: 'av-rec 1.6s ease-in-out infinite',
+              }} />
+              REC
+            </span>
+            <span style={{ opacity: 0.7 }}>Reel · Selected Works · MMXXIV–MMXXVI</span>
+          </div>
+          <div style={{ display: 'flex', gap: 28 }}>
+            <span>Scene 001</span>
+            <span>Take 04</span>
+            <span style={{ color: PAPER }}>TC {tc}</span>
+            <span>F2.0 · ISO 200</span>
+            <span>2.39 : 1</span>
+          </div>
+        </div>
+
+        {/* Bottom letterbox bar */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 64,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 48px 0 130px', zIndex: 5,
+          fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.22em',
+          textTransform: 'uppercase', color: 'rgba(243,237,228,0.5)',
+          borderTop: '1px solid rgba(243,237,228,0.06)',
+        }}>
+          <div>Berlin · Lisbon · 53°N 13°E</div>
+          <div>Available Q3 2026</div>
+        </div>
+
+        {/* Hero title */}
+        <div style={{ padding: '0 64px 110px 130px', position: 'relative', zIndex: 2, maxWidth: 1400 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.24em',
+            textTransform: 'uppercase', color: ACCENT, marginBottom: 28,
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
+            <span style={{ width: 28, height: 1, background: ACCENT }} />
+            No. 001 — Cover Frame
+          </div>
+          <h1 style={{
+            fontFamily: 'var(--font-sans)', fontWeight: 200,
+            fontSize: 'clamp(64px, 9.4vw, 156px)', lineHeight: 0.9, letterSpacing: '-0.04em',
+            margin: 0, color: PAPER, textShadow: '0 2px 30px rgba(0,0,0,0.4)',
+          }}>
+            Elikem <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400 }}>Abledu</span>
+          </h1>
+          <div style={{
+            display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
+            marginTop: 40, gap: 48, flexWrap: 'wrap',
+          }}>
+            <div style={{
+              fontFamily: 'var(--font-sans)', fontSize: 19, lineHeight: 1.4,
+              color: 'rgba(243,237,228,0.85)', maxWidth: 460, fontWeight: 300,
+            }}>
+              Independent architectural visualization — moving images, still frames, and atmospheric studies for studios shaping the built world.
+            </div>
+            <div data-cursor-hover style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em',
+              textTransform: 'uppercase', color: PAPER, display: 'flex', alignItems: 'center', gap: 14,
+              borderBottom: `1px solid ${ACCENT}`, paddingBottom: 8,
+            }}>
+              <span>Scroll the index</span>
+              <svg width="32" height="10" viewBox="0 0 32 10" fill="none">
+                <path d="M0 5 H30 M26 1 L30 5 L26 9" stroke={ACCENT} strokeWidth="1" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MARQUEE TICKER */}
+      <div style={{
+        borderTop: '1px solid rgba(243,237,228,0.1)',
+        borderBottom: '1px solid rgba(243,237,228,0.1)',
+        padding: '20px 0', overflow: 'hidden', position: 'relative',
+      }}>
+        <div style={{
+          display: 'flex', gap: 64, whiteSpace: 'nowrap',
+          animation: 'av-marquee 60s linear infinite',
+          fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400,
+          fontSize: 28, color: 'rgba(243,237,228,0.5)', letterSpacing: '-0.01em',
+        }}>
+          {[...PROJECTS, ...PROJECTS].map((p, i) => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 64 }}>
+              <span>{p.title}</span>
+              <span style={{
+                color: ACCENT, fontFamily: 'var(--font-mono)', fontStyle: 'normal',
+                fontSize: 12, letterSpacing: '0.2em',
+              }}>◇</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* WORK SECTION */}
+      <section data-section="work" style={{ padding: '120px 64px 120px 130px', position: 'relative' }}>
+        <FadeUp scopeRef={scopeRef}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 64, marginBottom: 96,
+            paddingBottom: 32, borderBottom: '1px solid rgba(243,237,228,0.12)',
+          }}>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em',
+              textTransform: 'uppercase', color: 'rgba(243,237,228,0.55)',
+            }}>§ Index of Works · 010 entries</div>
+            <h2 style={{
+              fontFamily: 'var(--font-sans)', fontWeight: 300,
+              fontSize: 'clamp(36px, 4vw, 64px)', lineHeight: 1.05, letterSpacing: '-0.025em',
+              margin: 0, maxWidth: 880, color: PAPER,
+            }}>
+              A working catalog of <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>commissioned imagery</span> — from competition entries to final marketing reels.
+            </h2>
+          </div>
+        </FadeUp>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 140 }}>
+          {PROJECTS.map((p, i) => (
+            <ProjectStack key={p.id} project={p} index={i} scopeRef={scopeRef} layout={layout} />
+          ))}
+        </div>
+      </section>
+
+      {/* ABOUT */}
+      <section data-section="about" style={{
+        position: 'relative', padding: '160px 64px 160px 130px',
+        borderTop: '1px solid rgba(243,237,228,0.12)',
+      }}>
+        <FadeUp scopeRef={scopeRef}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 80 }}>
+            <div>
+              <div style={{
+                fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em',
+                textTransform: 'uppercase', color: 'rgba(243,237,228,0.55)', marginBottom: 24,
+              }}>§ About the studio</div>
+              <div style={{
+                aspectRatio: '4/5',
+                backgroundImage: `url(https://images.unsplash.com/photo-1542435503-956c469947f6?w=1200&q=85&auto=format&fit=crop)`,
+                backgroundSize: 'cover', backgroundPosition: 'center',
+                filter: 'grayscale(0.5) contrast(1.05)',
+                borderRadius: 2,
+              }} />
+            </div>
+            <div>
+              <h3 style={{
+                fontFamily: 'var(--font-sans)', fontWeight: 300, fontSize: 42, lineHeight: 1.15,
+                letterSpacing: '-0.02em', margin: 0, marginBottom: 40, maxWidth: 760, color: PAPER,
+              }}>
+                I make pictures of buildings that <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>haven't been built yet.</span>
+              </h3>
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, maxWidth: 880,
+                fontSize: 16, lineHeight: 1.6, color: 'rgba(243,237,228,0.78)', fontWeight: 300,
+              }}>
+                <p style={{ margin: 0 }}>
+                  Trained as an architect, I shifted to visualization in 2018 to spend more time on the question that matters most to me: how a space will <em style={{ color: PAPER }}>feel</em> the moment someone walks in.
+                </p>
+                <p style={{ margin: 0 }}>
+                  My work sits between practice and cinema — boards for jury reviews, hero stills for press kits, real-time fly-throughs for sales galleries. The studio is a desk of one with a long bench of collaborators.
+                </p>
+              </div>
+              <div style={{
+                marginTop: 64, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32, maxWidth: 720,
+                paddingTop: 32, borderTop: '1px solid rgba(243,237,228,0.12)',
+              }}>
+                {[
+                  ['Stills', 'Hero frames, board sets, marketing'],
+                  ['Motion', 'Reels, fly-throughs, environmental loops'],
+                  ['Real-time', 'Sales-gallery experiences, VR walks'],
+                ].map(([h, s]) => (
+                  <div key={h}>
+                    <div style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em',
+                      textTransform: 'uppercase', color: ACCENT, marginBottom: 10,
+                    }}>{h}</div>
+                    <div style={{ fontSize: 14, color: 'rgba(243,237,228,0.7)', lineHeight: 1.45, fontWeight: 300 }}>{s}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </FadeUp>
+      </section>
+
+      {/* CONTACT */}
+      <section data-section="contact" style={{
+        position: 'relative', padding: '160px 64px 80px 130px',
+        borderTop: '1px solid rgba(243,237,228,0.12)',
+      }}>
+        <FadeUp scopeRef={scopeRef}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em',
+            textTransform: 'uppercase', color: 'rgba(243,237,228,0.55)', marginBottom: 64,
+          }}>§ End papers · Contact</div>
+          <h2 style={{
+            fontFamily: 'var(--font-sans)', fontWeight: 200,
+            fontSize: 'clamp(60px, 8vw, 130px)', lineHeight: 0.95, letterSpacing: '-0.035em',
+            margin: 0, marginBottom: 64, maxWidth: 1200, color: PAPER,
+          }}>
+            Have something <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: ACCENT }}>worth picturing?</span>
+          </h2>
+          <div data-cursor-hover style={{
+            display: 'inline-block',
+            fontFamily: 'var(--font-sans)', fontWeight: 300, fontSize: 32,
+            color: PAPER, borderBottom: `1px solid ${ACCENT}`, paddingBottom: 6, marginBottom: 80,
+          }}>studio@elikemabledu.com</div>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, maxWidth: 1200,
+            paddingTop: 32, borderTop: '1px solid rgba(243,237,228,0.12)',
+          }}>
+            {[
+              ['Studio', 'Fasanenstrasse 14\n10719 Berlin'],
+              ['Telephone', '+49 30 555 0184\nMon–Fri 10–18 CET'],
+              ['Press', 'press@elikemabledu.com\nKit available on request'],
+              ['Social', 'Instagram\nVimeo · Are.na'],
+            ].map(([h, b]) => (
+              <div key={h}>
+                <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em',
+                  textTransform: 'uppercase', color: ACCENT, marginBottom: 12,
+                }}>{h}</div>
+                <div style={{
+                  fontSize: 14, color: 'rgba(243,237,228,0.78)',
+                  lineHeight: 1.55, whiteSpace: 'pre-line', fontWeight: 300,
+                }}>{b}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{
+            marginTop: 80, paddingTop: 24, borderTop: '1px solid rgba(243,237,228,0.12)',
+            display: 'flex', justifyContent: 'space-between',
+            fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em',
+            textTransform: 'uppercase', color: 'rgba(243,237,228,0.4)',
+          }}>
+            <div>© MMXXVI Elikem Abledu</div>
+            <div>Site v.04 · Edition of one</div>
+          </div>
+        </FadeUp>
+      </section>
+    </div>
+  );
+}
+
+// ─── Mount ────────────────────────────────────────────────────────────────────
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <DirectionA grain={true} grainIntensity={0.08} layout="asym" />
+);
+</script>
+</body>
+</html>
