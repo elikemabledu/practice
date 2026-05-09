@@ -16,7 +16,7 @@
   html, body { margin: 0; padding: 0; background: #0a0908; height: 100%; }
   body { font-family: var(--font-sans); }
   ::selection { background: #B85C2C; color: #f3ede4; }
-  .dirA, .dirA * { cursor: none !important; }
+  *, *::before, *::after { cursor: none !important; }
   .dirA, html, body { scrollbar-width: none; }
   .dirA::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   @keyframes av-rec { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
@@ -49,18 +49,16 @@ const PROJECTS = [
   { id: 'p10', title: 'Aviary Pavilion', client: 'V&A Dundee', loc: 'Dundee, UK', year: 2023, type: 'Cultural exterior', img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=2200&q=85&auto=format&fit=crop' },
 ];
 
-function CustomCursor({ scopeRef, label = 'View' }) {
+// Cursor uses position:fixed so it stays visible through scrolling
+function CustomCursor({ label = 'View' }) {
   const dotRef = React.useRef(null);
   const ringRef = React.useRef(null);
   const [hover, setHover] = React.useState(false);
   const [active, setActive] = React.useState(false);
   React.useEffect(() => {
-    const scope = scopeRef.current;
-    if (!scope) return;
     let raf = 0, mx = -100, my = -100, rx = -100, ry = -100;
     const onMove = (e) => {
-      const rect = scope.getBoundingClientRect();
-      mx = e.clientX - rect.left; my = e.clientY - rect.top;
+      mx = e.clientX; my = e.clientY;
       setActive(true);
       setHover(!!(e.target.closest && e.target.closest('[data-cursor-hover]')));
     };
@@ -71,22 +69,22 @@ function CustomCursor({ scopeRef, label = 'View' }) {
       if (ringRef.current) ringRef.current.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
       raf = requestAnimationFrame(tick);
     };
-    scope.addEventListener('mousemove', onMove);
-    scope.addEventListener('mouseleave', onLeave);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseleave', onLeave);
     raf = requestAnimationFrame(tick);
-    return () => { scope.removeEventListener('mousemove', onMove); scope.removeEventListener('mouseleave', onLeave); cancelAnimationFrame(raf); };
-  }, [scopeRef]);
+    return () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseleave', onLeave); cancelAnimationFrame(raf); };
+  }, []);
   return (
     <React.Fragment>
-      <div ref={ringRef} style={{ position:'absolute', left:0, top:0, pointerEvents:'none', zIndex:9999, width:hover?84:26, height:hover?84:26, borderRadius:'50%', border:`1px solid ${hover?ACCENT:'rgba(255,255,255,0.5)'}`, opacity:active?1:0, transition:'width .25s cubic-bezier(.2,.8,.2,1),height .25s cubic-bezier(.2,.8,.2,1),border-color .2s,opacity .2s', mixBlendMode:'difference', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-mono)', fontSize:10, letterSpacing:'0.12em', color:hover?ACCENT:'rgba(255,255,255,0.8)', textTransform:'uppercase' }}>{hover ? label : ''}</div>
-      <div ref={dotRef} style={{ position:'absolute', left:0, top:0, pointerEvents:'none', zIndex:9999, width:4, height:4, borderRadius:'50%', background:ACCENT, opacity:active&&!hover?1:0, transition:'opacity .2s' }} />
+      <div ref={ringRef} style={{ position:'fixed', left:0, top:0, pointerEvents:'none', zIndex:9999, width:hover?84:26, height:hover?84:26, borderRadius:'50%', border:`1px solid ${hover?ACCENT:'rgba(255,255,255,0.5)'}`, opacity:active?1:0, transition:'width .25s cubic-bezier(.2,.8,.2,1),height .25s cubic-bezier(.2,.8,.2,1),border-color .2s,opacity .2s', mixBlendMode:'difference', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-mono)', fontSize:10, letterSpacing:'0.12em', color:hover?ACCENT:'rgba(255,255,255,0.8)', textTransform:'uppercase' }}>{hover ? label : ''}</div>
+      <div ref={dotRef} style={{ position:'fixed', left:0, top:0, pointerEvents:'none', zIndex:9999, width:4, height:4, borderRadius:'50%', background:ACCENT, opacity:active&&!hover?1:0, transition:'opacity .2s' }} />
     </React.Fragment>
   );
 }
 
 function GrainOverlay({ intensity = 0.08, on = true }) {
   if (!on) return null;
-  return <div style={{ position:'absolute', inset:0, pointerEvents:'none', zIndex:100, opacity:intensity, mixBlendMode:'overlay', backgroundImage:`url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`, backgroundSize:'220px 220px' }} />;
+  return <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:100, opacity:intensity, mixBlendMode:'overlay', backgroundImage:`url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`, backgroundSize:'220px 220px' }} />;
 }
 
 function FadeUp({ children, delay = 0, scopeRef }) {
@@ -192,8 +190,8 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
   };
 
   return (
-    <div ref={scopeRef} className="dirA" style={{ position:'relative', width:'100%', height:'100%', overflowY:'auto', overflowX:'hidden', background:INK, color:PAPER, cursor:'none', fontFamily:'var(--font-sans)' }}>
-      <CustomCursor scopeRef={scopeRef} label="View" />
+    <div ref={scopeRef} className="dirA" style={{ position:'relative', width:'100%', height:'100%', overflowY:'auto', overflowX:'hidden', background:INK, color:PAPER, fontFamily:'var(--font-sans)' }}>
+      <CustomCursor label="View" />
       <GrainOverlay on={grain} intensity={grainIntensity} />
 
       <div style={{ position:'sticky', top:0, left:0, height:0, zIndex:50, width:0 }}>
