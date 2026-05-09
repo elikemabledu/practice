@@ -43,17 +43,15 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" data-presets="react">
-// ─── Shared constants ────────────────────────────────────────────────────────
 const ACCENT = '#B85C2C';
 const ACCENT_DIM = '#8a4520';
 const INK = '#0a0908';
 const PAPER = '#f3ede4';
 const FOG = '#1a1816';
 
-// ─── Project data ────────────────────────────────────────────────────────────
 const PROJECTS = [
   { id: 'p01', title: 'Mira House', client: 'Private commission', loc: 'Lisbon, PT', year: 2026, type: 'Residential interior',
-    img: './Shot%203.jpg' },
+    img: './Shot%203%20flip.jpeg' },
   { id: 'p02', title: 'Halden Pavilion', client: 'Statsbygg', loc: 'Halden, NO', year: 2025, type: 'Cultural exterior',
     img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=2200&q=85&auto=format&fit=crop' },
   { id: 'p03', title: 'Saltern Quarter', client: 'Ørestad Property', loc: 'Copenhagen, DK', year: 2025, type: 'Masterplan',
@@ -74,7 +72,6 @@ const PROJECTS = [
     img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=2200&q=85&auto=format&fit=crop' },
 ];
 
-// ─── Custom cursor ────────────────────────────────────────────────────────────
 function CustomCursor({ label = 'View' }) {
   const dotRef = React.useRef(null);
   const ringRef = React.useRef(null);
@@ -129,7 +126,6 @@ function CustomCursor({ label = 'View' }) {
   );
 }
 
-// ─── Film grain overlay ───────────────────────────────────────────────────────
 function GrainOverlay({ intensity = 0.08, on = true }) {
   if (!on) return null;
   return (
@@ -142,7 +138,6 @@ function GrainOverlay({ intensity = 0.08, on = true }) {
   );
 }
 
-// ─── Fade-up on viewport entry ────────────────────────────────────────────────
 function FadeUp({ children, delay = 0, scopeRef, style: extraStyle }) {
   const ref = React.useRef(null);
   const [shown, setShown] = React.useState(false);
@@ -171,7 +166,6 @@ function FadeUp({ children, delay = 0, scopeRef, style: extraStyle }) {
   );
 }
 
-// ─── Project stack item ───────────────────────────────────────────────────────
 function ProjectStack({ project, index, scopeRef, layout }) {
   const ref = React.useRef(null);
   const imgRef = React.useRef(null);
@@ -206,7 +200,6 @@ function ProjectStack({ project, index, scopeRef, layout }) {
           gap: 48, alignItems: 'flex-end',
         }}
       >
-        {/* Caption side */}
         <div style={{ order: layout === 'asym' && isOdd ? 2 : 1, paddingBottom: 12 }}>
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em',
@@ -238,7 +231,6 @@ function ProjectStack({ project, index, scopeRef, layout }) {
           </div>
         </div>
 
-        {/* Image side */}
         <div style={{
           order: layout === 'asym' && isOdd ? 1 : 2,
           position: 'relative', overflow: 'hidden', aspectRatio: '16/10',
@@ -258,7 +250,6 @@ function ProjectStack({ project, index, scopeRef, layout }) {
               : 'linear-gradient(180deg, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.35) 100%)',
             transition: 'background .6s',
           }} />
-          {/* Hover caption fade-in */}
           <div style={{
             position: 'absolute', left: 24, right: 24, bottom: 24,
             display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
@@ -275,7 +266,6 @@ function ProjectStack({ project, index, scopeRef, layout }) {
               </svg>
             </span>
           </div>
-          {/* Index number */}
           <div style={{
             position: 'absolute', top: 18, right: 22,
             fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300,
@@ -287,24 +277,21 @@ function ProjectStack({ project, index, scopeRef, layout }) {
   );
 }
 
-// ─── Direction A — Editorial Stack ────────────────────────────────────────────
 function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
   const scopeRef = React.useRef(null);
   const heroBgRef = React.useRef(null);
   const [activeSection, setActive] = React.useState('index');
   const [tc, setTc] = React.useState('01:24:36:12');
 
-  // Live timecode
   React.useEffect(() => {
     const t = setInterval(() => {
       const d = new Date();
       const f = Math.floor((d.getMilliseconds() / 1000) * 24);
-      setTc(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '00')}:${String(d.getSeconds()).padStart(2, '0')}:${String(f).padStart(2, '0')}`);
+      setTc(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}:${String(f).padStart(2, '0')}`);
     }, 80);
     return () => clearInterval(t);
   }, []);
 
-  // Hero parallax + section detection
   React.useEffect(() => {
     const scope = scopeRef.current;
     if (!scope) return;
@@ -343,7 +330,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
       <CustomCursor label="View" />
       <GrainOverlay on={grain} intensity={grainIntensity} />
 
-      {/* Side rail nav */}
       <div style={{ position: 'sticky', top: 0, left: 0, height: 0, zIndex: 50, width: 0 }}>
         <nav style={{
           position: 'absolute', top: 0, left: 0, height: '100vh', width: 88,
@@ -384,13 +370,11 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
         </nav>
       </div>
 
-      {/* HERO — letterboxed cinematic frame */}
       <section data-section="index" style={{
         position: 'relative', height: '100vh', minHeight: 720, width: '100%',
         overflow: 'hidden', display: 'flex', alignItems: 'flex-end',
         background: '#000',
       }}>
-        {/* Letterboxed inner frame */}
         <div style={{ position: 'absolute', inset: '64px 0 64px 0', overflow: 'hidden' }}>
           <div ref={heroBgRef} style={{
             position: 'absolute', inset: '-10% 0',
@@ -398,7 +382,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
             backgroundSize: 'cover', backgroundPosition: 'center', willChange: 'transform',
             filter: 'contrast(1.08) saturate(0.92) brightness(0.92)',
           }} />
-          {/* Tonal grade */}
           <div style={{
             position: 'absolute', inset: 0,
             background: 'linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.05) 30%, rgba(10,9,8,0.25) 60%, rgba(10,9,8,0.95) 100%)',
@@ -408,12 +391,10 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
             background: `radial-gradient(ellipse at 72% 28%, rgba(184,92,44,0.22), transparent 55%)`,
             mixBlendMode: 'screen',
           }} />
-          {/* Vignette */}
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
             background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%)',
           }} />
-          {/* Crop marks */}
           {[
             { top: 14, left: 14, b: 'TL' },
             { top: 14, right: 14, b: 'TR' },
@@ -430,7 +411,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
           ))}
         </div>
 
-        {/* Top letterbox bar — slate chrome */}
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: 64,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -458,7 +438,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
           </div>
         </div>
 
-        {/* Bottom letterbox bar */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 64,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -471,7 +450,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
           <div>Available Q3 2026</div>
         </div>
 
-        {/* Hero title */}
         <div style={{ padding: '0 64px 110px 130px', position: 'relative', zIndex: 2, maxWidth: 1400 }}>
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.24em',
@@ -512,7 +490,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
         </div>
       </section>
 
-      {/* MARQUEE TICKER */}
       <div style={{
         borderTop: '1px solid rgba(243,237,228,0.1)',
         borderBottom: '1px solid rgba(243,237,228,0.1)',
@@ -536,7 +513,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
         </div>
       </div>
 
-      {/* WORK SECTION */}
       <section data-section="work" style={{ padding: '120px 64px 120px 130px', position: 'relative' }}>
         <FadeUp scopeRef={scopeRef}>
           <div style={{
@@ -556,7 +532,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
             </h2>
           </div>
         </FadeUp>
-
         <div style={{ display: 'flex', flexDirection: 'column', gap: 140 }}>
           {PROJECTS.map((p, i) => (
             <ProjectStack key={p.id} project={p} index={i} scopeRef={scopeRef} layout={layout} />
@@ -564,7 +539,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
         </div>
       </section>
 
-      {/* ABOUT */}
       <section data-section="about" style={{
         position: 'relative', padding: '160px 64px 160px 130px',
         borderTop: '1px solid rgba(243,237,228,0.12)',
@@ -625,7 +599,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
         </FadeUp>
       </section>
 
-      {/* CONTACT */}
       <section data-section="contact" style={{
         position: 'relative', padding: '160px 64px 80px 130px',
         borderTop: '1px solid rgba(243,237,228,0.12)',
@@ -684,7 +657,6 @@ function DirectionA({ grain = true, grainIntensity = 0.08, layout = 'asym' }) {
   );
 }
 
-// ─── Mount ────────────────────────────────────────────────────────────────────
 ReactDOM.createRoot(document.getElementById('root')).render(
   <DirectionA grain={true} grainIntensity={0.08} layout="asym" />
 );
